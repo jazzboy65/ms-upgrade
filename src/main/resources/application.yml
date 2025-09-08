@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${MS_UPDATE_DB}
+    username: ${MS_UPDATE_DB_USERNAME}
+    password: ${MS_UPDATE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${MS_UPDATE_HIBERNATE_DDL_AUTO}
+    show-sql: ${MS_UPDATE_SHOW_SQL}
