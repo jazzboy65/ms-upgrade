@@ -5,7 +5,7 @@ spring:
     password: ${MS_UPDATE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
-    open-in-view: ${MS_UPDATE_DB_OSIV}
+    open-in-view: false
     hibernate:
       ddl-auto: ${MS_UPDATE_HIBERNATE_DDL_AUTO}
     show-sql: ${MS_UPDATE_SHOW_SQL}
