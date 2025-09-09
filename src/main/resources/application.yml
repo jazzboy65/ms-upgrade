@@ -9,3 +9,6 @@ spring:
     hibernate:
       ddl-auto: ${MS_UPDATE_HIBERNATE_DDL_AUTO}
     show-sql: ${MS_UPDATE_SHOW_SQL}
+  liquibase:
+    enabled: ${LIQUIBASE_ENABLED}
+    change-log: classpath:/db/changelog/db.changelog-master.xml
