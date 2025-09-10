@@ -4,8 +4,19 @@ spring:
     username: ${MS_UPDATE_DB_USERNAME}
     password: ${MS_UPDATE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: ${MINIMUM_IDLE}
+      maximum-pool-size: ${MAXIMUM_POOL_SIZE}
+      connection-timeout: ${CONNECTION_TIMEOUT}
+      idle-timeout: ${IDLE_TIMEOUT}
+      max-lifetime: ${MAX_LIFETIME}
+      leak-detection-threshold: ${LEAK_DETECTION_THRESHOLD}
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: ${MS_UPDATE_HIBERNATE_DDL_AUTO}
     show-sql: ${MS_UPDATE_SHOW_SQL}
+    database-platform: org.hibernate.dialect.PostgresSQLDialect
+  liquibase:
+    enabled: ${LIQUIBASE_ENABLED}
+    change-log: classpath:/db/changelog/db.changelog-master.xml
