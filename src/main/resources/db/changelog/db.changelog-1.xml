@@ -4,4 +4,64 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="UPGAG-4.add-new-tables" author="AlexGordeeff" runOnChange="true">
+        <createTable tableName="account" schemaName="public">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_id" type="INT"/>
+            <column name="client_id" type="UUID"/>
+            <column name="account_type" type="VARCHAR"/>
+            <column name="currency_code" type="VARCHAR"/>
+        </createTable>
+        <createTable tableName="account_status" schemaName="public">
+            <column name="id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR"/>
+            <column name="description" type="varchar"/>
+        </createTable>
+        <createTable tableName="client" schemaName="public">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="full_name" type="INT"/>
+            <column name="citizenship" type="VARCHAR"/>
+            <column name="client_type" type="VARCHAR"/>
+            <column name="document_number" type="VARCHAR"/>
+            <column name="document_series" type="VARCHAR"/>
+            <column name="document_type" type="VARCHAR"/>
+            <column name="mdm_code" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="account"
+                baseColumnNames="status_id"
+                constraintName="fk_status_id"
+                referencedTableName="account_status"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"
+                deferrable="false"
+                initiallyDeferred="false"/>
+        <addForeignKeyConstraint
+                baseTableName="account"
+                baseColumnNames="client_id"
+                constraintName="fk_client_id"
+                referencedTableName="client"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"
+                deferrable="false"
+                initiallyDeferred="false"/>
+        <addForeignKeyConstraint
+                baseTableName="client"
+                baseColumnNames="full_name"
+                constraintName="fk_full_name"
+                referencedTableName="account_status"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"
+                deferrable="false"
+                initiallyDeferred="false"/>
+    </changeSet>
 </databaseChangeLog>
