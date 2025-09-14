@@ -4,23 +4,30 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
     <changeSet id="UPGAG-4.add-new-tables" author="AlexGordeeff" runOnChange="true">
         <createTable tableName="account" schemaName="public">
             <column name="id" type="UUID">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="status_id" type="INT"/>
             <column name="client_id" type="UUID"/>
             <column name="account_type" type="VARCHAR"/>
             <column name="currency_code" type="VARCHAR"/>
         </createTable>
+        <rollback>
+            <dropTable tableName="account" schemaName="public"/>
+        </rollback>
         <createTable tableName="account_status" schemaName="public">
-            <column name="id" type="INT">
+            <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR"/>
             <column name="description" type="varchar"/>
         </createTable>
+        <rollback>
+            <dropTable tableName="account_status" schemaName="public"/>
+        </rollback>
         <createTable tableName="client" schemaName="public">
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
@@ -33,6 +40,9 @@
             <column name="document_type" type="VARCHAR"/>
             <column name="mdm_code" type="BIGINT"/>
         </createTable>
+        <rollback>
+            <dropTable tableName="client" schemaName="public"/>
+        </rollback>
         <addForeignKeyConstraint
                 baseTableName="account"
                 baseColumnNames="status_id"
@@ -63,5 +73,9 @@
                 onUpdate="RESTRICT"
                 deferrable="false"
                 initiallyDeferred="false"/>
+    </changeSet>
+
+    <changeSet id="UPGAG-4.insert-statuses" author="ALexGordeeff" runOnChange="true">
+        <sqlFile path="db/sql_data1.sql"/>
     </changeSet>
 </databaseChangeLog>
