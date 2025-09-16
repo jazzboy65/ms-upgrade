@@ -1,13 +1,20 @@
 package alexgordeeff.ms_upgrade.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.JoinColumn;
 import lombok.Data;
 
 import java.util.UUID;
 
 @Data
 @Entity(name = "account")
-public class Account {
+public class AccountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -16,11 +23,11 @@ public class Account {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
-    private AccountStatus statusId;
+    private AccountStatusEntity accountStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
-    private Client clientId;
+    private ClientEntity client;
 
     @Column(name = "account_type")
     private String accountType;

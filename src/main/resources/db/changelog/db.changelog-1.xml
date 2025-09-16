@@ -4,8 +4,13 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
-    <changeSet id="UPGAG-4.add-new-tables" author="AlexGordeeff" runOnChange="true">
+    
+    <changeSet id="UPGAG-4.account" author="jazzboy65">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="account"/>
+            </not>
+        </preConditions>
         <createTable tableName="account" schemaName="public">
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
@@ -15,9 +20,14 @@
             <column name="account_type" type="VARCHAR"/>
             <column name="currency_code" type="VARCHAR"/>
         </createTable>
-        <rollback>
-            <dropTable tableName="account" schemaName="public"/>
-        </rollback>
+    </changeSet>
+
+    <changeSet id="UPGAG-4.account-status" author="jazzboy65">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="account_status"/>
+            </not>
+        </preConditions>
         <createTable tableName="account_status" schemaName="public">
             <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -25,9 +35,14 @@
             <column name="name" type="VARCHAR"/>
             <column name="description" type="varchar"/>
         </createTable>
-        <rollback>
-            <dropTable tableName="account_status" schemaName="public"/>
-        </rollback>
+    </changeSet>
+
+    <changeSet id="UPGAG-4.client" author="jazzboy65">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="client"/>
+            </not>
+        </preConditions>
         <createTable tableName="client" schemaName="public">
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
@@ -40,33 +55,39 @@
             <column name="document_type" type="VARCHAR"/>
             <column name="mdm_code" type="BIGINT"/>
         </createTable>
-        <rollback>
-            <dropTable tableName="client" schemaName="public"/>
-        </rollback>
+    </changeSet>
+
+    <changeSet id="UPGAG-4.foreign_key_constraint_account" author="jazzboy65">
         <addForeignKeyConstraint
                 baseTableName="account"
                 baseColumnNames="status_id"
-                constraintName="fk_status_id"
+                constraintName="fk_account_account_status_id"
                 referencedTableName="account_status"
                 referencedColumnNames="id"
                 onDelete="CASCADE"
                 onUpdate="RESTRICT"
                 deferrable="false"
                 initiallyDeferred="false"/>
+    </changeSet>
+
+    <changeSet id="UPGAG-4.foreign_key_constraint_account_status" author="jazzboy65">
         <addForeignKeyConstraint
                 baseTableName="account"
                 baseColumnNames="client_id"
-                constraintName="fk_client_id"
+                constraintName="fk_account_client_client_id"
                 referencedTableName="client"
                 referencedColumnNames="id"
                 onDelete="CASCADE"
                 onUpdate="RESTRICT"
                 deferrable="false"
                 initiallyDeferred="false"/>
+    </changeSet>
+
+    <changeSet id="UPGAG-4.foreign_key_constraint_client" author="jazzboy65">
         <addForeignKeyConstraint
                 baseTableName="client"
                 baseColumnNames="full_name"
-                constraintName="fk_full_name"
+                constraintName="fk_client_account_status_full_name"
                 referencedTableName="account_status"
                 referencedColumnNames="id"
                 onDelete="CASCADE"
@@ -76,6 +97,6 @@
     </changeSet>
 
     <changeSet id="UPGAG-4.insert-statuses" author="ALexGordeeff" runOnChange="true">
-        <sqlFile path="db/sql_data1.sql"/>
+        <sqlFile path="db/1-insert-statuses.sql"/>
     </changeSet>
 </databaseChangeLog>

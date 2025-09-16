@@ -1,11 +1,15 @@
 package alexgordeeff.ms_upgrade.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
 @Entity(name = "account_status")
-public class AccountStatus {
+public class AccountStatusEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
