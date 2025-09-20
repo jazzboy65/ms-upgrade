@@ -20,3 +20,12 @@ spring:
   liquibase:
     enabled: ${LIQUIBASE_ENABLED}
     change-log: classpath:/db/changelog/db.changelog-master.xml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, threaddump
+  server:
+    port: ${MANAGEMENT_PORT}
+server:
+  port: ${APP_PORT}
