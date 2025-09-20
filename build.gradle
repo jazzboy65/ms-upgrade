@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '3.2.0'
-    id 'io.spring.dependency-management' version '1.1.2'
-    id 'org.liquibase.gradle' version '2.2.0'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyVersion}"
+    id 'org.liquibase.gradle' version "${liquibaseVersion}"
     id 'java'
 }
 
 group = "alexgordeeff"
-version = "1.0-SNAPSHOT"
+version = project.appVersion
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(project.javaVersion)
     }
 }
 
@@ -33,5 +33,5 @@ test {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+    options.encoding = "${encoding}"
 }
