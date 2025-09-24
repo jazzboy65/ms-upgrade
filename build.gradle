@@ -42,12 +42,20 @@ tasks.withType(JavaCompile).configureEach {
 
 openApiGenerate {
     generatorName = "spring"
-    inputSpec = "$rootDir/src/main/resources/api/clients.yaml"
-    outputDir = "$projectDir/src/generated/main/java"
+    inputSpec = "$rootDir/src/main/resources/ms-upgrade-api.yaml"
+    outputDir = "$projectDir/generated/openapi/src/main/java"
     apiPackage = "clients.api"
     modelPackage = "clients.model"
     configOptions = [
-            dateLibrary:"java8",
-            library: "spring-boot"
+            dateLibrary: "java8",
+            library    : "spring-boot"
     ]
+}
+
+tasks.named('compileJava') {
+    dependsOn 'openApiGenerate'
+}
+
+sourceSets {
+    main.java.srcDirs += "$buildDir/generated/openapi/src/main/java"
 }

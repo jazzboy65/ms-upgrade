@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  title: MS UPGRADE API
+  version: 1.0.0
+  description: Best of API
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local environment
+
+paths:
+  /clients:
+    post:
+      summary: Создание нового клиента
+      operationId: createClient
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreate'
+            example:
+              mdmId: 1234567890
+              firstName: Иван
+              lastName: Петров
+              middleName: Сергеевич
+              citizenship: Москва
+              clientType: ИП
+              documentNumber: 1234567890
+              documentSeries: 1234
+              documentType: Паспорт
+              mdmCode: 123456
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: URL созданного ресурса
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+              example:
+                mdmId: 1234567890
+                firstName: Иван
+                lastName: Петров
+                middleName: Сергеевич
+                citizenship: Москва
+                clientType: ИП
+                documentNumber: 1234567890
+                documentSeries: 1234
+                documentType: Паспорт
+                mdmCode: 123456
+                accountStatus:
+                  name: Иван
+                  status: ACTIVE
+        '400':
+          description: Bad Request - невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: BAD_REQUEST
+                errorDescription: Невалидные данные
+                statusCode: 400
+        '409':
+          description: Conflict - клиент с таким mdmId уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: CONFLICT
+                errorDescription: Клиент с таким mdmId уже существует
+                statusCode: 409
+      security:
+        - bearerAuth: [ ]
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ClientCreate:
+      type: object
+      required:
+        - mdmId
+      properties:
+        mdmId:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        citizenship:
+          type: string
+        clientType:
+          type: string
+        documentNumber:
+          type: string
+        documentSeries:
+          type: string
+        documentType:
+          type: string
+        mdmCode:
+          type: integer
+          format: int64
+        accountStatus:
+          $ref: '#/components/schemas/AccountStatusCreate'
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        mdmId:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        citizenship:
+          type: string
+        clientType:
+          type: string
+        documentNumber:
+          type: string
+        documentSeries:
+          type: string
+        documentType:
+          type: string
+        mdmCode:
+          type: integer
+          format: int64
+        accountStatus:
+          $ref: '#/components/schemas/AccountStatus'
+    AccountStatus:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    AccountStatusCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    ErrorCode:
+      type: string
+      description: Мнемокод ошибки
+      enum:
+        - BAD_REQUEST
+        - CONFLICT
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - errorDescription
+        - statusCode
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/ErrorCode'
+        errorDescription:
+          type: string
+        statusCode:
+          type: integer
+      example:
+        errorCode: BAD_REQUEST
+        errorDescription: Невалидные данные
