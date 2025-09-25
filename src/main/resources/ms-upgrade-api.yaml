@@ -45,19 +45,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Client'
               example:
+                id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
                 mdmId: 1234567890
                 firstName: Иван
                 lastName: Петров
                 middleName: Сергеевич
-                citizenship: Москва
-                clientType: ИП
-                documentNumber: 1234567890
-                documentSeries: 1234
-                documentType: Паспорт
-                mdmCode: 123456
-                accountStatus:
-                  name: Иван
-                  status: ACTIVE
+                status: ACTIVE
+                createdAt: 2024-01-15T10:30:00Z
+                updatedAt: 2024-01-15T10:30:00Z
         '400':
           description: Bad Request - невалидные данные
           content:
@@ -103,6 +98,11 @@ components:
           type: string
         middleName:
           type: string
+    ClientCreate:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ClientData'
+      properties:
         citizenship:
           type: string
         clientType:
@@ -116,23 +116,23 @@ components:
         mdmCode:
           type: integer
           format: int64
-        accountStatus:
-          $ref: '#/components/schemas/AccountStatus'
-    ClientCreate:
-      allOf:
-        - $ref: '#/components/schemas/ClientData'
-      type: object
     Client:
       allOf:
         - $ref: '#/components/schemas/ClientData'
       type: object
-    AccountStatus:
-      type: object
       properties:
-        name:
+        id:
+          readOnly: true
           type: string
-        description:
+        createdAt:
           type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED, DELETED]
     ErrorCode:
       type: string
       description: Мнемокод ошибки
