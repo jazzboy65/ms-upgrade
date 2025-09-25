@@ -89,7 +89,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    ClientCreate:
+    ClientData:
       type: object
       required:
         - mdmId
@@ -117,46 +117,16 @@ components:
           type: integer
           format: int64
         accountStatus:
-          $ref: '#/components/schemas/AccountStatusCreate'
-    Client:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        mdmId:
-          type: integer
-          format: int64
-        firstName:
-          type: string
-        lastName:
-          type: string
-        middleName:
-          type: string
-        citizenship:
-          type: string
-        clientType:
-          type: string
-        documentNumber:
-          type: string
-        documentSeries:
-          type: string
-        documentType:
-          type: string
-        mdmCode:
-          type: integer
-          format: int64
-        accountStatus:
           $ref: '#/components/schemas/AccountStatus'
-    AccountStatus:
+    ClientCreate:
+      allOf:
+        - $ref: '#/components/schemas/ClientData'
       type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-    AccountStatusCreate:
+    Client:
+      allOf:
+        - $ref: '#/components/schemas/ClientData'
+      type: object
+    AccountStatus:
       type: object
       properties:
         name:
