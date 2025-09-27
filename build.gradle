@@ -1,12 +1,13 @@
 plugins {
-    id 'org.springframework.boot' version '3.2.0'
-    id 'io.spring.dependency-management' version '1.1.2'
-    id 'org.liquibase.gradle' version '2.2.0'
+    id ("org.springframework.boot") version "${springBootVersion}"
+    id ("io.spring.dependency-management") version "${springDependencyVersion}"
+    id ("org.liquibase.gradle") version "${liquibaseVersion}"
+    id ("org.openapi.generator") version "${generatorVersion}"
     id 'java'
 }
 
 group = "alexgordeeff"
-version = "1.0-SNAPSHOT"
+version = project.appVersion
 
 repositories {
     mavenCentral()
@@ -14,18 +15,21 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(project.javaVersion)
     }
 }
 
+ext.springdocVersion = project.springdocVersion
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.projectlombok:lombok'
-    implementation 'org.liquibase:liquibase-core'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    runtimeOnly 'org.postgresql:postgresql'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation ("org.springframework.boot:spring-boot-starter-web")
+    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation ("org.projectlombok:lombok")
+    implementation ("org.liquibase:liquibase-core")
+    implementation ("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}")
+    runtimeOnly ("org.postgresql:postgresql")
+    testImplementation ("org.springframework.boot:spring-boot-starter-test")
 }
 
 test {
@@ -33,5 +37,25 @@ test {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+    options.encoding = "${encoding}"
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$rootDir/src/main/resources/ms-upgrade-api.yaml"
+    outputDir = "$projectDir/generated/openapi/src/main/java"
+    apiPackage = "clients.api"
+    modelPackage = "clients.model"
+    configOptions = [
+            dateLibrary: "java8",
+            library    : "spring-boot"
+    ]
+}
+
+tasks.named('compileJava') {
+    dependsOn 'openApiGenerate'
+}
+
+sourceSets {
+    main.java.srcDirs += "$buildDir/generated/openapi/src/main/java"
 }
