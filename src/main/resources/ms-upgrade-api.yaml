@@ -28,18 +28,13 @@ paths:
               middleName: Сергеевич
               citizenship: Москва
               clientType: ИП
-              documentNumber: 1234567890
-              documentSeries: 1234
+              documentNumber: "1234567890"
+              documentSeries: "1234"
               documentType: Паспорт
               mdmCode: 123456
       responses:
         '201':
           description: Created
-          headers:
-            Location:
-              description: URL созданного ресурса
-              schema:
-                type: string
           content:
             application/json:
               schema:
@@ -73,9 +68,108 @@ paths:
                 errorCode: CONFLICT
                 errorDescription: Клиент с таким mdmId уже существует
                 statusCode: 409
+    get:
+      summary: Поиск клиентов с пагинацией и фильтрацией
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+            description: Номер страницы
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 20
+            description: Размер страницы
+        - in: query
+          name: lastName
+          schema:
+            type: string
+            description: Фильтр по фамилии
+        - in: query
+          name: mdmId
+          schema:
+            type: integer
+            description: Фильтр по фамилии
+      responses:
+        '200':
+          description: Клиент найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ClientWithPageable'
+                  pageable:
+                    $ref: '#/components/schemas/Pageable'
+                example:
+                  content:
+                    content:
+                      - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                        mdmId: 1234567890
+                        firstName: "Иван"
+                        lastName: "Петров"
+                        middleName: "Сергеевич"
+                        status: "ACTIVE"
+                      - id: "b2c3d4e5-f678-90ab-cdef-123456789012"
+                        mdmId: 9876543210
+                        firstName: "Мария"
+                        lastName: "Сидорова"
+                        middleName: "Ивановна"
+                        status: "INACTIVE"
+                  pageable:
+                    pageNumber: 1
+                    pageSize: 20
+                    totalPages: 5
+                    totalElements: 95
       security:
         - bearerAuth: [ ]
-
+  /clients/{clientId}:
+    get:
+      summary: Получение клиента по ID
+      operationId: getClientById
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: ID клиента (UUID)
+      responses:
+        '200':
+          description: Client Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientGet'
+              example:
+                id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                mdmId: 1234567890
+                firstName: Иван
+                lastName: Петров
+                middleName: Сергеевич
+                status: ACTIVE
+                createdAt: 2024-01-15T10:30:00Z
+                updatedAt: 2024-01-15T10:30:00Z
+                hasAccounts: true
+        '404':
+          description: Not found - клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: NOT_FOUND
+                errorDescription: Клиент не найден
+                statusCode: 404
+      security:
+        - bearerAuth: [ ]
 components:
   securitySchemes:
     bearerAuth:
@@ -116,6 +210,37 @@ components:
         mdmCode:
           type: integer
           format: int64
+    ClientGet:
+      allOf:
+        - $ref: '#/components/schemas/Client'
+      type: object
+      properties:
+        hasAccounts:
+          type: boolean
+          example: false
+    ClientWithPageable:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ ACTIVE, BLOCKED, DELETED ]
+      allOf:
+        - $ref: '#/components/schemas/ClientData'
+        - $ref: '#/components/schemas/Pageable'
+    Pageable:
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
     Client:
       allOf:
         - $ref: '#/components/schemas/ClientData'
@@ -124,6 +249,7 @@ components:
         id:
           readOnly: true
           type: string
+          format: uuid
         createdAt:
           type: string
           format: date-time
@@ -132,13 +258,14 @@ components:
           format: date-time
         status:
           type: string
-          enum: [ACTIVE, BLOCKED, DELETED]
+          enum: [ ACTIVE, BLOCKED, DELETED ]
     ErrorCode:
       type: string
       description: Мнемокод ошибки
       enum:
         - BAD_REQUEST
         - CONFLICT
+        - NOT_FOUND
     ErrorResponse:
       type: object
       required:
