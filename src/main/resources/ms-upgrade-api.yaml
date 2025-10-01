@@ -92,7 +92,7 @@ paths:
           name: mdmId
           schema:
             type: integer
-            description: Фильтр по фамилии
+            description: Фильтр по mdmId
       responses:
         '200':
           description: Клиент найден
@@ -104,9 +104,9 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ClientWithPageable'
-                  pageable:
-                    $ref: '#/components/schemas/Pageable'
+                      $ref: '#/components/schemas/ClientWithPageInfo'
+                  pageInfo:
+                    $ref: '#/components/schemas/PageInfo'
                 example:
                   content:
                     content:
@@ -122,7 +122,7 @@ paths:
                         lastName: Сидорова
                         middleName: Ивановна
                         status: BLOCKED
-                  pageable:
+                  pageInfo:
                     pageNumber: 1
                     pageSize: 20
                     totalPages: 5
@@ -147,7 +147,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientGet'
+                $ref: '#/components/schemas/ClientDTO'
               example:
                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
                 mdmId: 1234567890
@@ -170,6 +170,146 @@ paths:
                 statusCode: 404
       security:
         - bearerAuth: [ ]
+    patch:
+      summary: Обновление клиента
+      operationId: updateClientById
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: ID клиента (UUID)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientData"
+            example:
+              firstName: Иван
+              lastName: Петров
+              middleName: Сергеевич
+      responses:
+        '200':
+          description: Client Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+              example:
+                id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                mdmId: 1234567890
+                firstName: Иван
+                lastName: Петров
+                middleName: Сергеевич
+                status: ACTIVE
+                createdAt: 2024-01-15T10:30:00Z
+                updatedAt: 2024-01-15T10:30:00Z
+        '404':
+          description: Not found - клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: NOT_FOUND
+                errorDescription: Клиент не найден
+                statusCode: 404
+        '400':
+          description: Bad Request - невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: BAD_REQUEST
+                errorDescription: Невалидные данные
+                statusCode: 400
+      security:
+        - bearerAuth: [ ]
+    delete:
+      summary: Удаление клиента (soft delete)
+      operationId: deleteClientById
+      parameters:
+        - in: path
+          name: clientId
+          schema:
+            type: string
+          required: true
+          description: ID клиента (UUID)
+      responses:
+        '204':
+          description: Успешное удаление клиента (No Content)
+        '404':
+          description: Not found - клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: NOT_FOUND
+                errorDescription: Клиент не найден
+                statusCode: 404
+        '409':
+          description: Conflict - у клиента есть активные счета
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: CONFLICT
+                errorDescription: У клиента есть активные счета
+                statusCode: 409
+      security:
+        - bearerAuth: [ ]
+  /clients/{clientId}/exists:
+    get:
+      summary: Проверка существования клиента
+      operationId: checkClientExists
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Client Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exists:
+                    type: boolean
+                    description: true, если клиент существует, иначе false
+                    example: true
+                  clientId:
+                    type: string
+                    format: uuid
+                    description: ID клиента
+                    example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                  status:
+                    type: string
+                    enum: [ ACTIVE, BLOCKED, DELETED ]
+                    description: Статус клиента
+                    example: ACTIVE
+        '404':
+          description: Not found - клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: NOT_FOUND
+                errorDescription: Клиент не найден
+                statusCode: 404
+      security:
+        - bearerAuth: [ ]
+
 components:
   securitySchemes:
     bearerAuth:
@@ -186,12 +326,16 @@ components:
         mdmId:
           type: integer
           format: int64
+          nullable: true
         firstName:
           type: string
+          nullable: true
         lastName:
           type: string
+          nullable: true
         middleName:
           type: string
+          nullable: true
     ClientCreate:
       type: object
       allOf:
@@ -210,7 +354,7 @@ components:
         mdmCode:
           type: integer
           format: int64
-    ClientGet:
+    ClientDTO:
       allOf:
         - $ref: '#/components/schemas/Client'
       type: object
@@ -218,7 +362,7 @@ components:
         hasAccounts:
           type: boolean
           example: false
-    ClientWithPageable:
+    ClientWithPageInfo:
       type: object
       properties:
         id:
@@ -230,8 +374,8 @@ components:
           enum: [ ACTIVE, BLOCKED, DELETED ]
       allOf:
         - $ref: '#/components/schemas/ClientData'
-        - $ref: '#/components/schemas/Pageable'
-    Pageable:
+        - $ref: '#/components/schemas/PageInfo'
+    PageInfo:
       properties:
         pageNumber:
           type: integer
