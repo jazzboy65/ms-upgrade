@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
   title: MS UPGRADE API
   version: 1.0.0
@@ -127,8 +127,7 @@ paths:
                     pageSize: 20
                     totalPages: 5
                     totalElements: 95
-      security:
-        - bearerAuth: [ ]
+
   /clients/{clientId}:
     get:
       summary: Получение клиента по ID
@@ -168,8 +167,7 @@ paths:
                 errorCode: NOT_FOUND
                 errorDescription: Клиент не найден
                 statusCode: 404
-      security:
-        - bearerAuth: [ ]
+
     patch:
       summary: Обновление клиента
       operationId: updateClientById
@@ -227,8 +225,7 @@ paths:
                 errorCode: BAD_REQUEST
                 errorDescription: Невалидные данные
                 statusCode: 400
-      security:
-        - bearerAuth: [ ]
+
     delete:
       summary: Удаление клиента (soft delete)
       operationId: deleteClientById
@@ -262,8 +259,7 @@ paths:
                 errorCode: CONFLICT
                 errorDescription: У клиента есть активные счета
                 statusCode: 409
-      security:
-        - bearerAuth: [ ]
+
   /clients/{clientId}/exists:
     get:
       summary: Проверка существования клиента
@@ -307,8 +303,6 @@ paths:
                 errorCode: NOT_FOUND
                 errorDescription: Клиент не найден
                 statusCode: 404
-      security:
-        - bearerAuth: [ ]
 
 components:
   securitySchemes:

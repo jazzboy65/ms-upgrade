@@ -22,7 +22,7 @@ public class ClientEntity {
     private UUID id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "full_name", referencedColumnName = "id")
     private AccountStatusEntity accountStatus;
 
     @Column(name = "citizenship")

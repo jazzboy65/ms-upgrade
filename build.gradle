@@ -1,7 +1,6 @@
 plugins {
     id ("org.springframework.boot") version "${springBootVersion}"
     id ("io.spring.dependency-management") version "${springDependencyVersion}"
-    id ("org.liquibase.gradle") version "${liquibaseVersion}"
     id ("org.openapi.generator") version "${generatorVersion}"
     id 'java'
 }
@@ -24,11 +23,16 @@ ext.springdocVersion = project.springdocVersion
 dependencies {
     implementation ("org.springframework.boot:spring-boot-starter-web")
     implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation ("org.projectlombok:lombok")
+    compileOnly ("org.projectlombok:lombok:1.18.30")
+    annotationProcessor ("org.projectlombok:lombok:1.18.30")
+    testCompileOnly ("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor ("org.projectlombok:lombok:1.18.30")
     implementation ("org.liquibase:liquibase-core")
     implementation ("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.7")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}")
     runtimeOnly ("org.postgresql:postgresql")
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     testImplementation ("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -43,12 +47,19 @@ tasks.withType(JavaCompile).configureEach {
 openApiGenerate {
     generatorName = "spring"
     inputSpec = "$rootDir/src/main/resources/ms-upgrade-api.yaml"
-    outputDir = "$projectDir/generated/openapi/src/main/java"
+    outputDir = "$buildDir/generated/openapi"
     apiPackage = "clients.api"
     modelPackage = "clients.model"
+    generateApiTests = false
+    generateModelTests = false
     configOptions = [
             dateLibrary: "java8",
-            library    : "spring-boot"
+            library    : "spring-boot",
+            useSpringBoot3: "true",
+            interfaceOnly: "true",
+            openApiNullable: "false",
+            skipDefaultInterface: "true",
+            generateSupportingFiles: "false"
     ]
 }
 

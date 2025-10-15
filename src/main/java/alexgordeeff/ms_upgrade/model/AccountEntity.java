@@ -22,11 +22,11 @@ public class AccountEntity {
     private UUID id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
     private AccountStatusEntity accountStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
     private ClientEntity client;
 
     @Column(name = "account_type")
