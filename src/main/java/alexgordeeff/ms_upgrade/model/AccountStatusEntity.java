@@ -5,6 +5,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import lombok.Data;
 
 @Data
@@ -17,7 +19,8 @@ public class AccountStatusEntity {
     private Integer id;
 
     @Column(name = "name")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private ClientStatus name;
 
     @Column(name = "description")
     private String description;

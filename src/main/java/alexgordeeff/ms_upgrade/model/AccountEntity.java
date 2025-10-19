@@ -22,7 +22,7 @@ public class AccountEntity {
     private UUID id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    @JoinColumn(name = "status", referencedColumnName = "id")
     private AccountStatusEntity accountStatus;
 
     @OneToOne(cascade = CascadeType.ALL)

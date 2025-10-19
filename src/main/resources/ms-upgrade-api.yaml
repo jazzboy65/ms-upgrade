@@ -1,12 +1,12 @@
 openapi: 3.0.1
 info:
-  title: MS UPGRADE API
+  title: Clients API
   version: 1.0.0
   description: Best of API
 
 servers:
-  - url: http://localhost:8080/api/v1
-    description: Local environment
+  - url: /api/v1
+    description: basePath for access to API
 
 paths:
   /clients:

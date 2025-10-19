@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    
+
     <changeSet id="UPGAG-4.account" author="jazzboy65">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -98,5 +98,34 @@
 
     <changeSet id="UPGAG-4.insert-statuses" author="ALexGordeeff" runOnChange="true">
         <sqlFile path="db/1-insert-statuses.sql"/>
+    </changeSet>
+
+    <changeSet id="UPGAG-7.updates-client-table" author="AlexGordeeff">
+        <addColumn tableName="client" schemaName="public">
+            <column name="first_name" type="VARCHAR(255)"/>
+        </addColumn>
+        <addColumn tableName="client" schemaName="public">
+            <column name="last_name" type="VARCHAR(255)"/>
+        </addColumn>
+        <addColumn tableName="client" schemaName="public">
+            <column name="middle_name" type="VARCHAR(255)"/>
+        </addColumn>
+        <addColumn tableName="client" schemaName="public">
+            <column name="creation_date" type="TIMESTAMP"/>
+        </addColumn>
+        <addColumn tableName="client" schemaName="public">
+            <column name="updated_date" type="TIMESTAMP"/>
+        </addColumn>
+        <addColumn tableName="client" schemaName="public">
+            <column name="has_accounts" type="BOOLEAN"/>
+        </addColumn>
+        <renameColumn tableName="client"
+                      schemaName="public"
+                      oldColumnName="full_name"
+                      newColumnName="status"/>
+        <renameColumn tableName="account"
+                      schemaName="public"
+                      oldColumnName="status_id"
+                      newColumnName="status"/>
     </changeSet>
 </databaseChangeLog>
