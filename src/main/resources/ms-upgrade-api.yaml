@@ -234,6 +234,7 @@ paths:
           name: clientId
           schema:
             type: string
+            format: uuid
           required: true
           description: ID клиента (UUID)
       responses:
@@ -384,10 +385,6 @@ components:
         - $ref: '#/components/schemas/ClientData'
       type: object
       properties:
-        id:
-          readOnly: true
-          type: string
-          format: uuid
         createdAt:
           type: string
           format: date-time

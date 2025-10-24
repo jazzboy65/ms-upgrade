@@ -3,7 +3,6 @@ package alexgordeeff.ms_upgrade.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.CascadeType;
@@ -17,8 +16,8 @@ import java.util.UUID;
 public class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
+    @GeneratedValue
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @OneToOne(cascade = CascadeType.ALL)
