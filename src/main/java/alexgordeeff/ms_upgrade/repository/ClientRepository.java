@@ -11,4 +11,6 @@ public interface ClientRepository extends JpaRepository<ClientEntity, UUID> {
 
     boolean existsByMdmCode(Long mdmCode);
 
+    ClientEntity findClientById(UUID clientId);
+
 }

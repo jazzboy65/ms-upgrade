@@ -12,9 +12,8 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface MsUpgradeMapper {
 
-    @Mapping(target = "hasAccounts", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdAt",source = "creationDate")
+    @Mapping(target = "updatedAt", source = "updatedDate")
     @Mapping(target = "mdmId", source = "mdmCode")
     @Mapping(target = "status", source = "accountStatus.name")
     ClientDTO fromClientEntityToClientDTO(ClientEntity clientId);

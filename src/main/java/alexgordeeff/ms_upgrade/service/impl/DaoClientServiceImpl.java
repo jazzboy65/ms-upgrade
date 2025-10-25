@@ -32,7 +32,7 @@ public class DaoClientServiceImpl implements DaoClientService {
     public void deleteClientById(UUID clientId) {
         if (!clientRepository.existsById(clientId)) {
             throw new NotFoundException("Клиент не найден");
-        } else if (clientRepository.getReferenceById(clientId).getHasAccounts() != null) {
+        } else if (clientRepository.getReferenceById(clientId).getHasAccounts()) {
             throw new ConflictException("У клиента есть активные счета");
         } else clientRepository.deleteById(clientId);
     }
@@ -42,8 +42,7 @@ public class DaoClientServiceImpl implements DaoClientService {
     public void createClient(ClientEntity clientEntity) {
         if (!clientRepository.existsByMdmCode(clientEntity.getMdmCode())) {
             clientEntity.setCreationDate(OffsetDateTime.now());
-
-            clientRepository.save(clientEntity);
+            clientRepository.saveAndFlush(clientEntity);
         } else if (clientRepository.existsByMdmCode(clientEntity.getMdmCode())) {
             throw new ConflictException("Клиент с таким mdmId уже существует");
         } else throw new BadRequestException("Невалидные данные");
@@ -53,7 +52,7 @@ public class DaoClientServiceImpl implements DaoClientService {
     @Transactional
     public  ClientEntity getClientById(UUID clientId) {
         if (clientRepository.existsById(clientId)) {
-            return clientRepository.getReferenceById(clientId);
+            return clientRepository.findClientById(clientId);
         } else throw new NotFoundException("Клиент не найден");
     }
 }

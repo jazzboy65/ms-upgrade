@@ -316,8 +316,12 @@ components:
     ClientData:
       type: object
       required:
-        - mdmId
+        - id
       properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
         mdmId:
           type: integer
           format: int64

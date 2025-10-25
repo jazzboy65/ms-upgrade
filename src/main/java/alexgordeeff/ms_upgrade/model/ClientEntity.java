@@ -59,5 +59,5 @@ public class ClientEntity {
     private OffsetDateTime updatedDate;
 
     @Column(name = "has_accounts")
-    private Boolean hasAccounts;
+    private Boolean hasAccounts = false;
 }
