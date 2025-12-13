@@ -4,6 +4,8 @@ import alexgordeeff.ms_upgrade.exception.BadRequestException;
 import alexgordeeff.ms_upgrade.exception.ConflictException;
 import alexgordeeff.ms_upgrade.exception.NotFoundException;
 import alexgordeeff.ms_upgrade.model.ClientEntity;
+import alexgordeeff.ms_upgrade.model.ClientStatus;
+import alexgordeeff.ms_upgrade.repository.AccountStatusRepository;
 import alexgordeeff.ms_upgrade.repository.ClientRepository;
 import alexgordeeff.ms_upgrade.service.DaoClientService;
 import jakarta.transaction.Transactional;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class DaoClientServiceImpl implements DaoClientService {
 
     private final ClientRepository clientRepository;
+    private final AccountStatusRepository accountStatusRepository;
 
     @Override
     @Transactional
@@ -34,7 +37,10 @@ public class DaoClientServiceImpl implements DaoClientService {
             throw new NotFoundException("Клиент не найден");
         } else if (clientRepository.getReferenceById(clientId).getHasAccounts()) {
             throw new ConflictException("У клиента есть активные счета");
-        } else clientRepository.deleteById(clientId);
+        } else {
+            var clientEntity = clientRepository.findClientById(clientId);
+            clientEntity.setAccountStatus(accountStatusRepository.findByName(ClientStatus.DELETED));
+        }
     }
 
     @Override
@@ -42,6 +48,7 @@ public class DaoClientServiceImpl implements DaoClientService {
     public void createClient(ClientEntity clientEntity) {
         if (!clientRepository.existsByMdmCode(clientEntity.getMdmCode())) {
             clientEntity.setCreationDate(OffsetDateTime.now());
+            clientEntity.setAccountStatus(accountStatusRepository.findByName(ClientStatus.ACTIVE));
             clientRepository.saveAndFlush(clientEntity);
         } else if (clientRepository.existsByMdmCode(clientEntity.getMdmCode())) {
             throw new ConflictException("Клиент с таким mdmId уже существует");
@@ -50,9 +57,20 @@ public class DaoClientServiceImpl implements DaoClientService {
 
     @Override
     @Transactional
-    public  ClientEntity getClientById(UUID clientId) {
+    public ClientEntity getClientById(UUID clientId) {
         if (clientRepository.existsById(clientId)) {
             return clientRepository.findClientById(clientId);
         } else throw new NotFoundException("Клиент не найден");
+    }
+
+    @Override
+    @Transactional
+    public void updateClient(UUID clientId, ClientEntity clientEntity) {
+        if (clientRepository.existsById(clientId)) {
+            clientEntity.setUpdatedDate(OffsetDateTime.now());
+            clientRepository.saveAndFlush(clientEntity);
+        } else if (!clientRepository.existsById(clientId)) {
+            throw new NotFoundException("Клиент не найден");
+        } else throw new BadRequestException("Невалидные данные");
     }
 }

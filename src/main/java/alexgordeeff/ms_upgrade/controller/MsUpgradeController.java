@@ -7,7 +7,6 @@ import clients.model.ClientsGet200Response;
 import clients.model.Client;
 import clients.model.ClientCreate;
 import clients.model.ClientDTO;
-import clients.model.ClientData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +19,15 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1")
-public class MsUpgradeController implements ClientsApi{
+public class MsUpgradeController implements ClientsApi {
 
     private final ClientService clientService;
 
     @Override
     public ResponseEntity<CheckClientExists200Response> checkClientExists(UUID clientId) {
-            var response = new CheckClientExists200Response();
-            response.setExists(clientService.clientExists(clientId));
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        var response = new CheckClientExists200Response();
+        response.setExists(clientService.clientExists(clientId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
@@ -56,7 +55,9 @@ public class MsUpgradeController implements ClientsApi{
     }
 
     @Override
-    public ResponseEntity<Client> updateClientById(UUID clientId, ClientData clientData) {
-        return null;
+    public ResponseEntity<Client> updateClientById(UUID clientId, ClientCreate clientCreate) {
+        var clientEntity = clientService.updateClient(clientId, clientCreate);
+        var client = clientService.fromClientEntityToClient(clientEntity);
+        return new ResponseEntity<>(client, HttpStatus.OK);
     }
 }

@@ -14,4 +14,6 @@ public interface DaoClientService {
     void deleteClientById(UUID clientId);
 
     void createClient(ClientEntity clientEntity);
+
+    void updateClient(UUID clientId, ClientEntity clientEntity);
 }

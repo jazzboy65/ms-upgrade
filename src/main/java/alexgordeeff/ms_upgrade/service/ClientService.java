@@ -20,4 +20,6 @@ public interface ClientService {
     void deleteClient(UUID clientId);
 
     Client fromClientEntityToClient(ClientEntity clientEntity);
+
+    ClientEntity updateClient(UUID clientId, ClientCreate client);
 }

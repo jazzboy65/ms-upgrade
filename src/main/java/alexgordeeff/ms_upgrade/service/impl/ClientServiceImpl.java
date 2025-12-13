@@ -47,6 +47,13 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public ClientEntity updateClient(UUID clientId, ClientCreate client) {
+        var clientEntity = mapper.fromClientCreateToClientEntity(client);
+        daoClientService.updateClient(clientId, clientEntity);
+        return clientEntity;
+    }
+
+    @Override
     public void deleteClient(UUID clientId) {
         daoClientService.deleteClientById(clientId);
     }
