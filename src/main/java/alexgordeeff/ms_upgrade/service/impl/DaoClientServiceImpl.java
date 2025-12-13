@@ -8,11 +8,14 @@ import alexgordeeff.ms_upgrade.model.ClientStatus;
 import alexgordeeff.ms_upgrade.repository.AccountStatusRepository;
 import alexgordeeff.ms_upgrade.repository.ClientRepository;
 import alexgordeeff.ms_upgrade.service.DaoClientService;
+import clients.model.ClientWithPageInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -60,6 +63,14 @@ public class DaoClientServiceImpl implements DaoClientService {
     public ClientEntity getClientById(UUID clientId) {
         if (clientRepository.existsById(clientId)) {
             return clientRepository.findClientById(clientId);
+        } else throw new NotFoundException("Клиент не найден");
+    }
+
+    @Override
+    @Transactional
+    public List<ClientWithPageInfo> getClientPageById(Long mdmCode, Pageable pageable) {
+        if (clientRepository.existsByMdmCode(mdmCode)) {
+            return clientRepository.findAllByMdmCode(mdmCode, pageable);
         } else throw new NotFoundException("Клиент не найден");
     }
 

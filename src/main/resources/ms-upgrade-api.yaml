@@ -22,7 +22,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ClientCreate'
             example:
-              mdmId: 1234567890
+              mdmCode: 1234567890
               firstName: Иван
               lastName: Петров
               middleName: Сергеевич
@@ -31,7 +31,6 @@ paths:
               documentNumber: "1234567890"
               documentSeries: "1234"
               documentType: Паспорт
-              mdmCode: 123456
       responses:
         '201':
           description: Created
@@ -41,7 +40,7 @@ paths:
                 $ref: '#/components/schemas/Client'
               example:
                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-                mdmId: 1234567890
+                mdmCode: 1234567890
                 firstName: Иван
                 lastName: Петров
                 middleName: Сергеевич
@@ -59,14 +58,14 @@ paths:
                 errorDescription: Невалидные данные
                 statusCode: 400
         '409':
-          description: Conflict - клиент с таким mdmId уже существует
+          description: Conflict - клиент с таким mdm уже существует
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 errorCode: CONFLICT
-                errorDescription: Клиент с таким mdmId уже существует
+                errorDescription: Клиент с таким mdm уже существует
                 statusCode: 409
     get:
       summary: Поиск клиентов с пагинацией и фильтрацией
@@ -89,10 +88,11 @@ paths:
             type: string
             description: Фильтр по фамилии
         - in: query
-          name: mdmId
+          name: mdmCode
           schema:
             type: integer
-            description: Фильтр по mdmId
+            format: int64
+            description: Фильтр по mdmCode
       responses:
         '200':
           description: Клиент найден
@@ -111,13 +111,13 @@ paths:
                   content:
                     content:
                       - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-                        mdmId: 1234567890
+                        mdmCode: 1234567890
                         firstName: Иван
                         lastName: Петров
                         middleName: Сергеевич
                         status: ACTIVE
                       - id: b2c3d4e5-f678-90ab-cdef-123456789012
-                        mdmId: 9876543210
+                        mdmCode: 9876543210
                         firstName: Мария
                         lastName: Сидорова
                         middleName: Ивановна
@@ -149,7 +149,7 @@ paths:
                 $ref: '#/components/schemas/ClientDTO'
               example:
                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-                mdmId: 1234567890
+                mdmCode: 1234567890
                 firstName: Иван
                 lastName: Петров
                 middleName: Сергеевич
@@ -198,7 +198,7 @@ paths:
                 $ref: "#/components/schemas/Client"
               example:
                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-                mdmId: 1234567890
+                mdmCode: 1234567890
                 firstName: Иван
                 lastName: Петров
                 middleName: Сергеевич
@@ -321,20 +321,15 @@ components:
         id:
           type: string
           format: uuid
-          nullable: false
-        mdmId:
+        mdmCode:
           type: integer
-          format: int64
-          nullable: true
+#          format: int64
         firstName:
           type: string
-          nullable: true
         lastName:
           type: string
-          nullable: true
         middleName:
           type: string
-          nullable: true
     ClientCreate:
       type: object
       allOf:
@@ -352,7 +347,7 @@ components:
           type: string
         mdmCode:
           type: integer
-          format: int64
+#          format: int64
     ClientDTO:
       allOf:
         - $ref: '#/components/schemas/Client'

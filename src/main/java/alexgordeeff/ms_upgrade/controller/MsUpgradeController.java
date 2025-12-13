@@ -8,6 +8,7 @@ import clients.model.Client;
 import clients.model.ClientCreate;
 import clients.model.ClientDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -31,7 +32,12 @@ public class MsUpgradeController implements ClientsApi {
     }
 
     @Override
-    public ResponseEntity<ClientsGet200Response> clientsGet(Integer page, Integer size, String lastName, Integer mdmId) {
+    public ResponseEntity<ClientsGet200Response> clientsGet(Integer page, Integer size, String lastName, Long mdmCode) {
+        var client = clientService.getClientByPage(mdmCode, PageRequest.of(page, size));
+        var response = new ClientsGet200Response();
+        response.setContent(client);
+        response.pageInfo()
+
         return null;
     }
 

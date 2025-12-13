@@ -8,9 +8,12 @@ import alexgordeeff.ms_upgrade.service.DaoClientService;
 import clients.model.Client;
 import clients.model.ClientCreate;
 import clients.model.ClientDTO;
+import clients.model.ClientWithPageInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,6 +47,12 @@ public class ClientServiceImpl implements ClientService {
         } else {
             throw new NotFoundException("Клиент не найден");
         }
+    }
+
+    @Override
+    public List<ClientWithPageInfo> getClientByPage(Long mdmCode, Pageable pageable) {
+
+            return daoClientService.getClientPageById(mdmCode, pageable);
     }
 
     @Override

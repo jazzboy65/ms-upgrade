@@ -1,10 +1,10 @@
 package alexgordeeff.ms_upgrade.service;
 
 import alexgordeeff.ms_upgrade.model.ClientEntity;
-import clients.model.Client;
-import clients.model.ClientCreate;
-import clients.model.ClientDTO;
+import clients.model.*;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ClientService {
@@ -22,4 +22,6 @@ public interface ClientService {
     Client fromClientEntityToClient(ClientEntity clientEntity);
 
     ClientEntity updateClient(UUID clientId, ClientCreate client);
+
+    List<ClientWithPageInfo> getClientByPage(Long mdmCode, Pageable pageable);
 }

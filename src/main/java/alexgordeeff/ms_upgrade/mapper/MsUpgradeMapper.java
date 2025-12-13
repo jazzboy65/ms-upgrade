@@ -14,7 +14,6 @@ public interface MsUpgradeMapper {
 
     @Mapping(target = "createdAt",source = "creationDate")
     @Mapping(target = "updatedAt", source = "updatedDate")
-    @Mapping(target = "mdmId", source = "mdmCode")
     @Mapping(target = "status", source = "accountStatus.name")
     ClientDTO fromClientEntityToClientDTO(ClientEntity clientId);
 
@@ -28,7 +27,6 @@ public interface MsUpgradeMapper {
     @Mapping(target = "createdAt",source = "creationDate")
     @Mapping(target = "updatedAt", source = "updatedDate")
     @Mapping(target = "status", source = "accountStatus.name")
-    @Mapping(target = "mdmId", source = "mdmCode")
     Client fromClientEntityToClient(ClientEntity clientEntity);
 }
 
