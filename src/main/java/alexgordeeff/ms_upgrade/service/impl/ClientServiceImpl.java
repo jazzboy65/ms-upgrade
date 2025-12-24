@@ -1,6 +1,7 @@
 package alexgordeeff.ms_upgrade.service.impl;
 
-import alexgordeeff.ms_upgrade.exception.NotFoundException;
+import alexgordeeff.ms_upgrade.exception.ApiError;
+import alexgordeeff.ms_upgrade.exception.ApiException;
 import alexgordeeff.ms_upgrade.mapper.ClientMapper;
 import alexgordeeff.ms_upgrade.model.ClientEntity;
 import alexgordeeff.ms_upgrade.service.ClientService;
@@ -45,7 +46,7 @@ public class ClientServiceImpl implements ClientService {
         if (daoClientService.checkClientExistsById(clientId)) {
             return daoClientService.getClientById(clientId);
         } else {
-            throw new NotFoundException("Клиент не найден");
+            throw new ApiException(ApiError.NOT_FOUND_EXCEPTION);
         }
     }
 

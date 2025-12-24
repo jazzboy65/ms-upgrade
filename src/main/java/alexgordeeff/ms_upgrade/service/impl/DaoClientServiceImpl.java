@@ -1,8 +1,6 @@
 package alexgordeeff.ms_upgrade.service.impl;
 
-import alexgordeeff.ms_upgrade.exception.BadRequestException;
-import alexgordeeff.ms_upgrade.exception.ConflictException;
-import alexgordeeff.ms_upgrade.exception.NotFoundException;
+import alexgordeeff.ms_upgrade.exception.*;
 import alexgordeeff.ms_upgrade.mapper.ClientMapper;
 import alexgordeeff.ms_upgrade.model.ClientEntity;
 import alexgordeeff.ms_upgrade.model.ClientStatus;
@@ -32,16 +30,16 @@ public class DaoClientServiceImpl implements DaoClientService {
     public boolean checkClientExistsById(UUID clientId) {
         if (clientRepository.existsById(clientId)) {
             return true;
-        } else throw new NotFoundException("Клиент не найден");
+        } else throw new ApiException(ApiError.NOT_FOUND_EXCEPTION);
     }
 
     @Override
     @Transactional
     public void deleteClientById(UUID clientId) {
         if (!clientRepository.existsById(clientId)) {
-            throw new NotFoundException("Клиент не найден");
+            throw new ApiException(ApiError.NOT_FOUND_EXCEPTION);
         } else if (clientRepository.getReferenceById(clientId).getHasAccounts()) {
-            throw new ConflictException("У клиента есть активные счета");
+            throw new ApiException(ApiError.CONFLICT_EXCEPTION);
         } else {
             var clientEntity = clientRepository.findClientById(clientId);
             clientEntity.setAccountStatus(accountStatusRepository.findByName(ClientStatus.DELETED));
@@ -56,8 +54,8 @@ public class DaoClientServiceImpl implements DaoClientService {
             clientEntity.setAccountStatus(accountStatusRepository.findByName(ClientStatus.ACTIVE));
             clientRepository.saveAndFlush(clientEntity);
         } else if (clientRepository.existsByMdmCode(clientEntity.getMdmCode())) {
-            throw new ConflictException("Клиент с таким mdmId уже существует");
-        } else throw new BadRequestException("Невалидные данные");
+            throw new ApiException(ApiError.CONFLICT_EXCEPTION);
+        } else throw new ApiException(ApiError.BAD_REQUEST_EXCEPTION);
     }
 
     @Override
@@ -65,13 +63,13 @@ public class DaoClientServiceImpl implements DaoClientService {
     public ClientEntity getClientById(UUID clientId) {
         if (clientRepository.existsById(clientId)) {
             return clientRepository.findClientById(clientId);
-        } else throw new NotFoundException("Клиент не найден");
+        } else throw new ApiException(ApiError.NOT_FOUND_EXCEPTION);
     }
 
     @Override
     @Transactional
     public ClientsGet200Response getClientFromPageable(Pageable pageable) {
-            return clientMapper.fromClientEntityToClientWithPageInfo(clientRepository.findAll(pageable));
+        return clientMapper.fromClientEntityToClientWithPageInfo(clientRepository.findAll(pageable));
     }
 
     @Override
@@ -80,18 +78,18 @@ public class DaoClientServiceImpl implements DaoClientService {
         if (clientRepository.existsById(clientId)) {
             var client = clientRepository.findClientById(clientId);
             client.setUpdatedDate(OffsetDateTime.now());
-            if(clientUpdate.getFirstName() != null) {
+            if (clientUpdate.getFirstName() != null) {
                 client.setFirstName(clientUpdate.getFirstName());
             }
-            if(clientUpdate.getMiddleName() != null) {
+            if (clientUpdate.getMiddleName() != null) {
                 client.setMiddleName(clientUpdate.getMiddleName());
             }
-            if(clientUpdate.getLastName() != null) {
+            if (clientUpdate.getLastName() != null) {
                 client.setLastName(clientUpdate.getLastName());
             }
             clientRepository.saveAndFlush(client);
         } else if (!clientRepository.existsById(clientId)) {
-            throw new NotFoundException("Клиент не найден");
-        } else throw new BadRequestException("Невалидные данные");
+            throw new ApiException(ApiError.BAD_REQUEST_EXCEPTION);
+        }
     }
 }
