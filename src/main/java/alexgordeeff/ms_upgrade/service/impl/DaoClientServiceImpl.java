@@ -3,19 +3,20 @@ package alexgordeeff.ms_upgrade.service.impl;
 import alexgordeeff.ms_upgrade.exception.BadRequestException;
 import alexgordeeff.ms_upgrade.exception.ConflictException;
 import alexgordeeff.ms_upgrade.exception.NotFoundException;
+import alexgordeeff.ms_upgrade.mapper.ClientMapper;
 import alexgordeeff.ms_upgrade.model.ClientEntity;
 import alexgordeeff.ms_upgrade.model.ClientStatus;
 import alexgordeeff.ms_upgrade.repository.AccountStatusRepository;
 import alexgordeeff.ms_upgrade.repository.ClientRepository;
 import alexgordeeff.ms_upgrade.service.DaoClientService;
-import clients.model.ClientWithPageInfo;
+import clients.model.ClientUpdate;
+import clients.model.ClientsGet200Response;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +25,7 @@ public class DaoClientServiceImpl implements DaoClientService {
 
     private final ClientRepository clientRepository;
     private final AccountStatusRepository accountStatusRepository;
+    private final ClientMapper clientMapper;
 
     @Override
     @Transactional
@@ -68,18 +70,26 @@ public class DaoClientServiceImpl implements DaoClientService {
 
     @Override
     @Transactional
-    public List<ClientWithPageInfo> getClientPageById(Long mdmCode, Pageable pageable) {
-        if (clientRepository.existsByMdmCode(mdmCode)) {
-            return clientRepository.findAllByMdmCode(mdmCode, pageable);
-        } else throw new NotFoundException("Клиент не найден");
+    public ClientsGet200Response getClientFromPageable(Pageable pageable) {
+            return clientMapper.fromClientEntityToClientWithPageInfo(clientRepository.findAll(pageable));
     }
 
     @Override
     @Transactional
-    public void updateClient(UUID clientId, ClientEntity clientEntity) {
+    public void updateClient(UUID clientId, ClientUpdate clientUpdate) {
         if (clientRepository.existsById(clientId)) {
-            clientEntity.setUpdatedDate(OffsetDateTime.now());
-            clientRepository.saveAndFlush(clientEntity);
+            var client = clientRepository.findClientById(clientId);
+            client.setUpdatedDate(OffsetDateTime.now());
+            if(clientUpdate.getFirstName() != null) {
+                client.setFirstName(clientUpdate.getFirstName());
+            }
+            if(clientUpdate.getMiddleName() != null) {
+                client.setMiddleName(clientUpdate.getMiddleName());
+            }
+            if(clientUpdate.getLastName() != null) {
+                client.setLastName(clientUpdate.getLastName());
+            }
+            clientRepository.saveAndFlush(client);
         } else if (!clientRepository.existsById(clientId)) {
             throw new NotFoundException("Клиент не найден");
         } else throw new BadRequestException("Невалидные данные");

@@ -48,7 +48,7 @@ tasks.withType(JavaCompile).configureEach {
 
 openApiGenerate {
     generatorName = "spring"
-    inputSpec = "$rootDir/src/main/resources/ms-upgrade-api.yaml"
+    inputSpec = "$rootDir/src/main/resources/clients-api.yaml"
     outputDir = "$buildDir/generated/openapi"
     apiPackage = "clients.api"
     modelPackage = "clients.model"

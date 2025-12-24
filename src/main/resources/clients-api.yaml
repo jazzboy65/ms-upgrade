@@ -104,7 +104,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ClientWithPageInfo'
+                      $ref: '#/components/schemas/ClientPageDto'
                   pageInfo:
                     $ref: '#/components/schemas/PageInfo'
                 example:
@@ -184,7 +184,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ClientCreate"
+              $ref: "#/components/schemas/ClientUpdate"
             example:
               firstName: Иван
               lastName: Петров
@@ -347,7 +347,15 @@ components:
           type: string
         mdmCode:
           type: integer
-#          format: int64
+    ClientUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
     ClientDTO:
       allOf:
         - $ref: '#/components/schemas/Client'
@@ -356,7 +364,7 @@ components:
         hasAccounts:
           type: boolean
           example: false
-    ClientWithPageInfo:
+    ClientPageDto:
       type: object
       properties:
         id:
@@ -368,7 +376,6 @@ components:
           enum: [ ACTIVE, BLOCKED, DELETED ]
       allOf:
         - $ref: '#/components/schemas/ClientData'
-        - $ref: '#/components/schemas/PageInfo'
     PageInfo:
       properties:
         pageNumber:
@@ -379,6 +386,7 @@ components:
           type: integer
         totalElements:
           type: integer
+          format: int64
     Client:
       allOf:
         - $ref: '#/components/schemas/ClientData'

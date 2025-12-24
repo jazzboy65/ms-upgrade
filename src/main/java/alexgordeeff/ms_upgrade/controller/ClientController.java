@@ -7,8 +7,10 @@ import clients.model.ClientsGet200Response;
 import clients.model.Client;
 import clients.model.ClientCreate;
 import clients.model.ClientDTO;
+import clients.model.ClientUpdate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1")
-public class MsUpgradeController implements ClientsApi {
+public class ClientController implements ClientsApi {
 
     private final ClientService clientService;
 
@@ -33,19 +35,16 @@ public class MsUpgradeController implements ClientsApi {
 
     @Override
     public ResponseEntity<ClientsGet200Response> clientsGet(Integer page, Integer size, String lastName, Long mdmCode) {
-        var client = clientService.getClientByPage(mdmCode, PageRequest.of(page, size));
-        var response = new ClientsGet200Response();
-        response.setContent(client);
-        response.pageInfo()
-
-        return null;
+        var pageable = PageRequest.of(page, size,Sort.by("lastName", "mdmCode").descending());
+        var response = clientService.fromPageableToClientWithPageInfo(pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Client> createClient(ClientCreate clientCreate) {
         var clientEntity = clientService.createClient(clientCreate);
-        var client = clientService.fromClientEntityToClient(clientEntity);
-        return new ResponseEntity<>(client, HttpStatus.CREATED);
+        var response = clientService.fromClientEntityToClient(clientEntity);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Override
@@ -56,14 +55,14 @@ public class MsUpgradeController implements ClientsApi {
 
     @Override
     public ResponseEntity<ClientDTO> getClientById(UUID clientId) {
-        var clientDTO = clientService.getClientDTO(clientService.getClient(clientId));
-        return new ResponseEntity<>(clientDTO, HttpStatus.OK);
+        var response = clientService.getClientDTO(clientService.getClient(clientId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Client> updateClientById(UUID clientId, ClientCreate clientCreate) {
-        var clientEntity = clientService.updateClient(clientId, clientCreate);
-        var client = clientService.fromClientEntityToClient(clientEntity);
-        return new ResponseEntity<>(client, HttpStatus.OK);
+    public ResponseEntity<Client> updateClientById(UUID clientId, ClientUpdate client) {
+        var clientEntity = clientService.updateClient(clientId, client);
+        var response = clientService.fromClientEntityToClient(clientEntity);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -1,26 +1,26 @@
 package alexgordeeff.ms_upgrade.service.impl;
 
 import alexgordeeff.ms_upgrade.exception.NotFoundException;
-import alexgordeeff.ms_upgrade.mapper.MsUpgradeMapper;
+import alexgordeeff.ms_upgrade.mapper.ClientMapper;
 import alexgordeeff.ms_upgrade.model.ClientEntity;
 import alexgordeeff.ms_upgrade.service.ClientService;
 import alexgordeeff.ms_upgrade.service.DaoClientService;
 import clients.model.Client;
 import clients.model.ClientCreate;
 import clients.model.ClientDTO;
-import clients.model.ClientWithPageInfo;
+import clients.model.ClientUpdate;
+import clients.model.ClientsGet200Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    private final MsUpgradeMapper mapper;
+    private final ClientMapper mapper;
     private final DaoClientService daoClientService;
 
     @Override
@@ -34,8 +34,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientEntity createClient(ClientCreate clientCreate) {
-        var clientEntity = mapper.fromClientCreateToClientEntity(clientCreate);
+    public ClientEntity createClient(ClientCreate client) {
+        var clientEntity = mapper.fromClientCreateToClientEntity(client);
         daoClientService.createClient(clientEntity);
         return clientEntity;
     }
@@ -50,16 +50,14 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<ClientWithPageInfo> getClientByPage(Long mdmCode, Pageable pageable) {
-
-            return daoClientService.getClientPageById(mdmCode, pageable);
+    public ClientEntity updateClient(UUID clientId, ClientUpdate update) {
+        daoClientService.updateClient(clientId, update);
+        return daoClientService.getClientById(clientId);
     }
 
     @Override
-    public ClientEntity updateClient(UUID clientId, ClientCreate client) {
-        var clientEntity = mapper.fromClientCreateToClientEntity(client);
-        daoClientService.updateClient(clientId, clientEntity);
-        return clientEntity;
+    public ClientsGet200Response fromPageableToClientWithPageInfo(Pageable pageable) {
+        return daoClientService.getClientFromPageable(pageable);
     }
 
     @Override
