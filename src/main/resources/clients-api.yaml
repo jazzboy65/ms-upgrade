@@ -408,6 +408,7 @@ components:
         - BAD_REQUEST
         - CONFLICT
         - NOT_FOUND
+        - RUNTIME_EXCEPTION
     ErrorResponse:
       type: object
       required:
