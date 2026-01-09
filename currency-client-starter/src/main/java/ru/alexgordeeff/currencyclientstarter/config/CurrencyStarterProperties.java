@@ -3,7 +3,7 @@ package ru.alexgordeeff.currencyclientstarter.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "app.currency-client")
+@ConfigurationProperties(prefix = "currency-client-starter")
 public class CurrencyStarterProperties {
     private boolean enabled;
     private String apiKey;

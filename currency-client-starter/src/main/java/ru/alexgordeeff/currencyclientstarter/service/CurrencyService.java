@@ -29,14 +29,17 @@ public class CurrencyService {
                     throw new ExchangeRateException(String.format(
                             "Failed to fetch currency rates for %s and %s", fromCurrency, toCurrency));
                 })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new RuntimeException("Server error occurred while fetching currency rates with status: " + response.getStatusCode());
+                })
                 .body(CurrencyRoot.class);
 
-        return getRate(fromCurrency, currencyRoot);
+        return getRate(toCurrency, currencyRoot);
     }
 
     private BigDecimal getRate(String toCurrency, CurrencyRoot currencyRoot) {
         if (currencyRoot == null) {
-            throw new ExchangeRateException("For selected currency result is null");
+            throw new ExchangeRateException(String.format("For currency %s result is null", toCurrency));
         }
 
         if ("error".equals(currencyRoot.getResult())) {
@@ -49,9 +52,6 @@ public class CurrencyService {
         }
 
         var rate = rates.get(toCurrency);
-        if (rate == null) {
-            throw new ExchangeRateException(String.format("Rate value is null for %s", toCurrency));
-        }
         return BigDecimal.valueOf(rate);
     }
 }

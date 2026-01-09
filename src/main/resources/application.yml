@@ -29,3 +29,8 @@ management:
     port: ${MANAGEMENT_PORT}
 server:
   port: ${APP_PORT}
+
+currency-client-starter:
+  enabled: ${CURRENCY_CLIENT_STARTER_ENABLED}
+  api-key: ${CURRENCY_CLIENT_STARTER_API_KEY}
+  base-url: ${CURRENCY_CLIENT_STARTER_BASE_URL}

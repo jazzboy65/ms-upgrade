@@ -9,7 +9,7 @@ import ru.alexgordeeff.currencyclientstarter.service.CurrencyService;
 
 @Configuration
 @EnableConfigurationProperties(CurrencyStarterProperties.class)
-@ConditionalOnProperty(prefix = "app.currency-client", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "currency-client-starter", name = "enabled", havingValue = "true")
 public class CurrencyClientAutoConfiguration {
 
     @Bean
