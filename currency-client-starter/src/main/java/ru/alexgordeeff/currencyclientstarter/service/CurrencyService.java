@@ -1,5 +1,7 @@
 package ru.alexgordeeff.currencyclientstarter.service;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import ru.alexgordeeff.currencyclientstarter.model.CurrencyRoot;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClient;
@@ -13,10 +15,14 @@ public class CurrencyService {
     private final String apiKey;
 
     public CurrencyService(RestClient restClient, String apiKey) {
-            this.restClient = restClient;
-            this.apiKey = apiKey;
+        this.restClient = restClient;
+        this.apiKey = apiKey;
     }
 
+    @Retryable(retryFor = {RuntimeException.class, ExchangeRateException.class}
+            , maxAttemptsExpression = "${currency-client-starter.retry.max-attempts}"
+            , backoff = @Backoff(delayExpression = "${currency-client-starter.retry.backoff}")
+            , label = "currency-rate")
     public BigDecimal getExchangeRate(String fromCurrency, String toCurrency) {
         if (fromCurrency == null || toCurrency == null || fromCurrency.isBlank() || toCurrency.isBlank()) {
             throw new ExchangeRateException("fromCurrency and toCurrency must be non-empty");

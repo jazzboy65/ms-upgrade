@@ -40,6 +40,7 @@ dependencies {
     implementation("org.openapitools:jackson-databind-nullable:0.2.7")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}")
     runtimeOnly ("org.postgresql:postgresql")
+    implementation("io.micrometer:micrometer-registry-prometheus")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     testImplementation ("org.springframework.boot:spring-boot-starter-test")
 }

@@ -1,1 +1,3 @@
 ru.alexgordeeff.currencyclientstarter.config.CurrencyClientAutoConfiguration
+ru.alexgordeeff.currencyclientstarter.retry.CurrencyClientRetryAutoConfiguration
+ru.alexgordeeff.currencyclientstarter.health.CurrencyHealthAutoConfiguration
