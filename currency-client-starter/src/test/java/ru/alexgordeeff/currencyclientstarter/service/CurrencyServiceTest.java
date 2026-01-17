@@ -2,13 +2,11 @@ package ru.alexgordeeff.currencyclientstarter.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,10 +23,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -54,45 +53,43 @@ class CurrencyServiceTest {
         var test = objectMapper.readValue(new File("src/test/resources/currency-test.json"), CurrencyRoot.class);
         var expectedRate = new BigDecimal("80.8584");
         when(restClient.get()
-                .uri(anyString(),anyString())
+                .uri(anyString(), anyString())
                 .retrieve()
-                .onStatus(any(), any())
-                .onStatus(any(), any())
                 .body(CurrencyRoot.class))
                 .thenReturn(test);
 
         var actualRate = currencyService.getExchangeRate(USD, RUB);
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
             softly.assertThat(actualRate).isEqualTo(expectedRate);
-            Mockito.verify(restClient, Mockito.times(2)).get();
+            verify(restClient, times(2)).get();
         });
     }
 
     @Test
     void getExchangeRate_fromCurrency_null() {
         assertThatThrownBy(() -> currencyService.getExchangeRate(null, RUB))
-                .isInstanceOf(ExchangeRateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("fromCurrency and toCurrency must be non-empty");
     }
 
     @Test
     void getExchangeRate_toCurrency_null() {
         assertThatThrownBy(() -> currencyService.getExchangeRate(USD, null))
-                .isInstanceOf(ExchangeRateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("fromCurrency and toCurrency must be non-empty");
     }
 
     @Test
     void getExchangeRate_fromCurrency_blank() {
         assertThatThrownBy(() -> currencyService.getExchangeRate("", RUB))
-                .isInstanceOf(ExchangeRateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("fromCurrency and toCurrency must be non-empty");
     }
 
     @Test
     void getExchangeRate_toCurrency_blank() {
         assertThatThrownBy(() -> currencyService.getExchangeRate(USD, ""))
-                .isInstanceOf(ExchangeRateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("fromCurrency and toCurrency must be non-empty");
     }
 
@@ -132,8 +129,6 @@ class CurrencyServiceTest {
         when(restClient.get()
                 .uri(anyString(), anyString())
                 .retrieve()
-                .onStatus(any(), any())
-                .onStatus(any(), any())
                 .body(CurrencyRoot.class))
                 .thenReturn(null);
 
@@ -147,8 +142,6 @@ class CurrencyServiceTest {
         when(restClient.get()
                 .uri(anyString(), anyString())
                 .retrieve()
-                .onStatus(any(), any())
-                .onStatus(any(), any())
                 .body(CurrencyRoot.class))
                 .thenReturn(new CurrencyRoot("error", new HashMap<>()));
 
@@ -162,8 +155,6 @@ class CurrencyServiceTest {
         when(restClient.get()
                 .uri(anyString(), anyString())
                 .retrieve()
-                .onStatus(any(), any())
-                .onStatus(any(), any())
                 .body(CurrencyRoot.class))
                 .thenReturn(new CurrencyRoot("success", null));
 
@@ -177,13 +168,17 @@ class CurrencyServiceTest {
         when(restClient.get()
                 .uri(anyString(), anyString())
                 .retrieve()
-                .onStatus(any(), any())
-                .onStatus(any(), any())
                 .body(CurrencyRoot.class))
                 .thenReturn(new CurrencyRoot("success", Map.of("CNY", 1.0)));
 
         assertThatThrownBy(() -> currencyService.getExchangeRate(RUB, USD))
                 .isInstanceOf(ExchangeRateException.class)
                 .hasMessage("Rate for USD not found");
+    }
+
+    @Test
+    void getExchangeRate_fromCurrency_equals_toCurrency() {
+        var actual = currencyService.getExchangeRate(RUB, RUB);
+        assertThat(actual).isEqualTo(BigDecimal.ONE);
     }
 }

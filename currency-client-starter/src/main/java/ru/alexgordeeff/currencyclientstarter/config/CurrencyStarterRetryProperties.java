@@ -1,8 +1,5 @@
-package ru.alexgordeeff.currencyclientstarter.retry;
+package ru.alexgordeeff.currencyclientstarter.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-@ConfigurationProperties(prefix = "currency-client-starter.retry")
 public class CurrencyStarterRetryProperties {
     private boolean enabled;
     private int maxAttempts;

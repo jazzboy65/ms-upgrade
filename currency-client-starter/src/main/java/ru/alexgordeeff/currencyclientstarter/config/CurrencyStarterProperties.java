@@ -2,14 +2,25 @@ package ru.alexgordeeff.currencyclientstarter.config;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import ru.alexgordeeff.currencyclientstarter.health.CurrencyStarterHealthProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "currency-client-starter")
 public class CurrencyStarterProperties {
     private boolean enabled;
     private String apiKey;
     private String baseUrl;
+    @NestedConfigurationProperty
     private CurrencyStarterHealthProperties health = new CurrencyStarterHealthProperties();
+    @NestedConfigurationProperty
+    private CurrencyStarterRetryProperties retry = new CurrencyStarterRetryProperties();
+
+    public CurrencyStarterRetryProperties getRetry() {
+        return retry;
+    }
+
+    public void setRetry(CurrencyStarterRetryProperties retry) {
+        this.retry = retry;
+    }
 
     public CurrencyStarterHealthProperties getHealth() {
         return health;
