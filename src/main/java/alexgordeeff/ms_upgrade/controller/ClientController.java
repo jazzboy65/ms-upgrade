@@ -1,6 +1,7 @@
 package alexgordeeff.ms_upgrade.controller;
 
 import alexgordeeff.ms_upgrade.service.ClientService;
+import alexgordeeff.ms_upgrade.service.ConversionRatesService;
 import clients.api.ClientsApi;
 import clients.model.CheckClientExists200Response;
 import clients.model.ClientsGet200Response;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -25,6 +28,7 @@ import java.util.UUID;
 public class ClientController implements ClientsApi {
 
     private final ClientService clientService;
+    private final ConversionRatesService conversionRatesService;
 
     @Override
     public ResponseEntity<CheckClientExists200Response> checkClientExists(UUID clientId) {
@@ -64,5 +68,14 @@ public class ClientController implements ClientsApi {
         var clientEntity = clientService.updateClient(clientId, client);
         var response = clientService.fromClientEntityToClient(clientEntity);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/getRate")
+    public ResponseEntity<String> getExchangeRate(
+            @RequestParam(name = "fromRate") String fromRate,
+            @RequestParam(name = "toRate") String toRate) {
+        var rate = conversionRatesService.convert(fromRate, toRate);
+        return new ResponseEntity<>(String.format("Курс %s к %s = %f", fromRate, toRate, rate), HttpStatus.OK);
+
     }
 }

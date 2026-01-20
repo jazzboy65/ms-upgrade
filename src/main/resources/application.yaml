@@ -24,8 +24,22 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, threaddump
+        include: health, info, threaddump,prometheus
   server:
     port: ${MANAGEMENT_PORT}
+  endpoint:
+    health:
+      show-details: always
 server:
   port: ${APP_PORT}
+
+currency-client-starter:
+  enabled: ${CURRENCY_CLIENT_STARTER_ENABLED}
+  api-key: ${CURRENCY_CLIENT_STARTER_API_KEY}
+  base-url: ${CURRENCY_CLIENT_STARTER_BASE_URL}
+  retry:
+    enabled: ${CURRENCY_CLIENT_STARTER_RETRY_ENABLED}
+    max-attempts: ${CURRENCY_CLIENT_STARTER_RETRY_MAX_ATTEMPTS}
+    backoff: ${CURRENCY_CLIENT_STARTER_RETRY_BACKOFF}
+  health:
+    enabled: ${CURRENCY_CLIENT_STARTER_HEALTH_ENABLED}
