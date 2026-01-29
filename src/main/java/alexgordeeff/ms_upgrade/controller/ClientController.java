@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -76,6 +75,5 @@ public class ClientController implements ClientsApi {
             @RequestParam(name = "toRate") String toRate) {
         var rate = conversionRatesService.convert(fromRate, toRate);
         return new ResponseEntity<>(String.format("Курс %s к %s = %f", fromRate, toRate, rate), HttpStatus.OK);
-
     }
 }
